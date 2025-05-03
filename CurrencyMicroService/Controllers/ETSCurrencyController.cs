@@ -1,12 +1,11 @@
 ﻿using CurrencyMicroService.Core.DTOs;
-using CurrencyMicroService.Core.Exceptions;
 using CurrencyMicroService.Core.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
 namespace CurrencyMicroService.Controllers
 {
     [ApiController]
-    [Route("api/[controller]")]
+    [Route("api/ETSCurrencies")]
     public class ETSCurrencyController : ControllerBase
     {
         private readonly IETSCurrencyService _currencyService;
@@ -23,7 +22,7 @@ namespace CurrencyMicroService.Controllers
 
             if (currencies == null || !currencies.Any())
             {
-                throw new NotFoundException("No ETS currency data available");
+                return NotFound("No data available");
             }
 
             return Ok(currencies);
@@ -36,7 +35,7 @@ namespace CurrencyMicroService.Controllers
 
             if (currency == null)
             {
-                throw new NotFoundException($"No ETS currency data available for code {code}");
+                return NotFound($"No data available for code {code}");
             }
 
             return Ok(currency);

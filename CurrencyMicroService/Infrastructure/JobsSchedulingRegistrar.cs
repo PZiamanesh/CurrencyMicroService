@@ -36,7 +36,7 @@ namespace CurrencyMicroService.Infrastructure
         {
             try
             {
-                string timeExpression = await _settingsProvider.GetSettingAsync("ETSCurrencyDailyJobStartTime");
+                string timeExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrencyDailyJobStartTime));
                 string[] timeParts = timeExpression.Trim().Split('-');
 
                 int hour = int.Parse(timeParts[0]);
@@ -48,13 +48,11 @@ namespace CurrencyMicroService.Infrastructure
                     Cron.Daily(hour, minute)
                     );
 
-                _logger.LogInformation($"ETSCurrencyUpdateJob scheduled successfully");
-
-                BackgroundJob.Enqueue<ETSCurrencyUpdateJob>(job => job.ExecuteAsync());
+                _logger.LogInformation($"{nameof(ETSCurrencyUpdateJob)} scheduled successfully");
             }
             catch
             {
-                throw new InternalServerException("Error registering ETSCurrencyUpdateJob");
+                throw new InternalServerException($"Error registering {nameof(ETSCurrencyUpdateJob)}");
             }
         }
 
@@ -62,7 +60,7 @@ namespace CurrencyMicroService.Infrastructure
         {
             try
             {
-                string dateTimeExpression = await _settingsProvider.GetSettingAsync("LogsTableMonthlyCleanUp");
+                string dateTimeExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.LogsTableMonthlyCleanUp));
                 string[] timeParts = dateTimeExpression.Trim().Split('-');
 
                 int day = int.Parse(timeParts[0]);
@@ -75,11 +73,11 @@ namespace CurrencyMicroService.Infrastructure
                     Cron.Monthly(day, hour, minute)
                     );
 
-                _logger.LogInformation("LogCleanupJob scheduled successfully");
+                _logger.LogInformation($"{nameof(LogCleanupJob)} scheduled successfully");
             }
             catch
             {
-                throw new InternalServerException("Error registering LogCleanupJob");
+                throw new InternalServerException($"Error registering {nameof(LogCleanupJob)}");
             }
         }
     }

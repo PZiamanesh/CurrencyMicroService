@@ -67,7 +67,7 @@ namespace CurrencyMicroService.Core.Services
             }
             catch
             {
-                throw new InternalServerException("Error updating ETS currency information");
+                throw new InternalServerException($"Error updating {nameof(ETSCurrency)} information");
             }
         }
 

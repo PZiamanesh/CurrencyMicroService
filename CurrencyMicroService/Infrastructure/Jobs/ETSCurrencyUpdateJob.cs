@@ -1,4 +1,5 @@
-﻿using CurrencyMicroService.Core.Exceptions;
+﻿using CurrencyMicroService.Core.Entities;
+using CurrencyMicroService.Core.Exceptions;
 using CurrencyMicroService.Core.Interfaces;
 using CurrencyMicroService.Infrastructure.HttpClientServices;
 
@@ -25,23 +26,23 @@ namespace CurrencyMicroService.Infrastructure.Jobs
         {
             try
             {
-                _logger.LogInformation("Starting ETS currency update job");
+                _logger.LogInformation($"Starting {nameof(ETSCurrencyUpdateJob)}");
 
                 var currencyInfos = await _scraperService.GetLatestETSCurrencyRatesAsync();
 
                 if (currencyInfos == null || !currencyInfos.Any())
                 {
-                    _logger.LogWarning("No ETS currency data fetched, skipping database update");
+                    _logger.LogWarning($"No {nameof(ETSCurrency)} data fetched, skipping database update");
                     return;
                 }
 
                 await _currencyService.UpdateETSCurrenciesAsync(currencyInfos);
 
-                _logger.LogInformation("ETS Currency update job completed successfully");
+                _logger.LogInformation($"{nameof(ETSCurrencyUpdateJob)} completed successfully");
             }
             catch
             {
-                throw new InternalServerException("Error in ETS currency update job");
+                throw new InternalServerException($"Error occured in {nameof(ETSCurrencyUpdateJob)}");
             }
         }
     }

@@ -60,7 +60,8 @@ namespace CurrencyMicroService.SharedModule
             }
             else
             {
-                throw new InternalServerException($"Setting with key '{settingKey}' not found");
+                _logger.LogError($"No setting key found for {settingKey}");
+                throw new ApplicationSettingKeyNotFoundException(settingKey);
             }
         }
 

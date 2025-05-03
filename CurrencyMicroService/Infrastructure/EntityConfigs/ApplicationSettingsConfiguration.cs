@@ -12,9 +12,11 @@ namespace CurrencyMicroService.Infrastructure.EntityConfigs
 
             builder.HasKey(s => s.Id);
 
-            builder.Property(s => s.Id).ValueGeneratedNever();
+            builder.Property(s => s.Id)
+                .ValueGeneratedNever();
 
-            builder.HasIndex(s => s.SettingKey).IsUnique();
+            builder.HasIndex(s => s.SettingKey)
+                .IsUnique();
 
             builder.Property(s => s.SettingKey)
                 .IsRequired()

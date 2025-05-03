@@ -27,18 +27,18 @@ namespace CurrencyMicroService.Infrastructure.HttpClientServices
         {
             try
             {
-                string etsCurrencyUrl = await _settingsProvider.GetSettingAsync("ETSCurrencyUrl");
+                string etsCurrencyUrl = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrencyUrl));
 
                 string html = await _httpClient.GetStringAsync(etsCurrencyUrl);
                 var htmlDoc = new HtmlDocument();
                 htmlDoc.LoadHtml(html);
 
-                string xpathQuery = await _settingsProvider.GetSettingAsync("ETSCurrency_XPath_Query");
+                string xpathQuery = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrency_XPath_Query));
                 var currencyRows = htmlDoc.DocumentNode.SelectNodes(xpathQuery);
 
                 if (currencyRows == null || !currencyRows.Any())
                 {
-                    _logger.LogError("No ETS currency data found in the HTML or it could be an HTML parsing problem");
+                    _logger.LogError($"No {nameof(ETSCurrency)} data found in the HTML or it could be an HTML parsing problem");
                     return new List<ETSCurrency>();
                 }
 
@@ -71,7 +71,7 @@ namespace CurrencyMicroService.Infrastructure.HttpClientServices
                     }
                     catch
                     {
-                        throw new InternalServerException("Error processing ETS currency row");
+                        throw new InternalServerException($"Error processing {nameof(ETSCurrency)} row");
                     }
                 }
 
@@ -79,7 +79,7 @@ namespace CurrencyMicroService.Infrastructure.HttpClientServices
             }
             catch
             {
-                throw new InternalServerException("Error fetching currency rates");
+                throw new InternalServerException($"Error fetching {nameof(ETSCurrency)} list");
             }
         }
 

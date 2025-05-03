@@ -4,7 +4,7 @@ using CurrencyMicroService.Infrastructure.HttpClientServices;
 using CurrencyMicroService.Infrastructure.Jobs;
 using CurrencyMicroService.Infrastructure.Repositories;
 
-namespace CurrencyMicroService
+namespace CurrencyMicroService.SharedModule
 {
     public static class RegisterLayerServices
     {

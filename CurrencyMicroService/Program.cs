@@ -7,7 +7,6 @@ using Serilog.Sinks.MSSqlServer;
 using Serilog;
 using Serilog.Events;
 using CurrencyMicroService.SharedModule;
-using CurrencyMicroService;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +58,7 @@ builder.Services.AddHangfire(configuration => configuration
         UseRecommendedIsolationLevel = true,
         DisableGlobalLocks = true
     })
-    .UseFilter(new AutomaticRetryAttribute { Attempts = 3, DelaysInSeconds = new[] { 5, 8, 12 } })
+    .UseFilter(new AutomaticRetryAttribute { Attempts = 2, DelaysInSeconds = new[] { 5, 10 } })
 );
 
 builder.Services.AddHangfireServer();
@@ -128,7 +127,7 @@ app.UseHangfireDashboard();
 
 app.MapControllers();
 
-// invoke job scheduler - scheduling jobs are registred in JobsSchedulingRegistrar class
+// start job scheduler
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;

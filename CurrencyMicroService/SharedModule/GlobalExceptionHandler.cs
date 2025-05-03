@@ -17,34 +17,32 @@ namespace CurrencyMicroService.SharedModule
         {
             _logger.LogError(exception, "An exception occurred: {Message}", exception.Message);
 
-            // register custom exceptions
-
             (string Detail, string Title, int StatusCode) details = exception switch
             {
-                NotFoundException notFoundEx =>
+                #region Register Exceptions
+
+                ApplicationSettingKeyNotFoundException appSettingNotFoundEx =>
                 (
-                    notFoundEx.Message,
-                    "Resource Not Found",
-                    StatusCodes.Status404NotFound
+                    appSettingNotFoundEx.Message,
+                    "Application Setting Key Not Found",
+                    StatusCodes.Status500InternalServerError
                 ),
-                BadRequestException badRequestEx =>
-                (
-                    badRequestEx.Message,
-                    "Bad Request",
-                    StatusCodes.Status400BadRequest
-                ),
+
                 InternalServerException internalEx =>
                 (
                     internalEx.Message,
                     "Internal Server Error",
                     StatusCodes.Status500InternalServerError
                 ),
+
                 _ =>
                 (
                     "An unexpected error occurred",
                     "Internal Server Error",
                     StatusCodes.Status500InternalServerError
                 )
+
+                #endregion
             };
 
             var problemDetails = new ProblemDetails

@@ -37,7 +37,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException("Failed to retrieve latest ETS currency data from database");
+                throw new InternalServerException($"Failed to retrieve latest {nameof(ETSCurrency)} data from database");
             }
         }
 
@@ -52,7 +52,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to retrieve ETS currency data for code {code}");
+                throw new InternalServerException($"Failed to retrieve {nameof(ETSCurrency)} data for code {code}");
             }
         }
 
@@ -64,7 +64,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to add ETS currency data for code {currencyInfo.Code}");
+                throw new InternalServerException($"Failed to add {nameof(ETSCurrency)} data for code {currencyInfo.Code}");
             }
         }
 
@@ -76,7 +76,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to update ETS currency data for code {currencyInfo.Code}");
+                throw new InternalServerException($"Failed to update {nameof(ETSCurrency)} data for code {currencyInfo.Code}");
             }
         }
 
@@ -85,14 +85,6 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             try
             {
                 await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateConcurrencyException)
-            {
-                throw new InternalServerException("A concurrency conflict occurred while saving changes");
-            }
-            catch (DbUpdateException)
-            {
-                throw new InternalServerException("Failed to save changes to the database");
             }
             catch
             {

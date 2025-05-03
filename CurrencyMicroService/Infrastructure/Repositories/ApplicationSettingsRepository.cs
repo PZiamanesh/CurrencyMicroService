@@ -24,7 +24,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException("Failed to retrieve application settings from database");
+                throw new InternalServerException($"Failed to retrieve {nameof(ApplicationSettings)} from database");
             }
         }
 
@@ -37,7 +37,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to retrieve application setting with key '{settingKey}'");
+                throw new ApplicationSettingKeyNotFoundException(settingKey);
             }
         }
     }

@@ -22,18 +22,18 @@ namespace CurrencyMicroService.Infrastructure.Jobs
         {
             try
             {
-                _logger.LogInformation("Starting monthly log cleanup job");
+                _logger.LogInformation($"Starting {nameof(LogCleanupJob)}");
 
                 string connectionString = _configuration.GetConnectionString("CurrencyDbConnection")!;
                 const string tableName = "Logs";
 
                 await CleanupOldLogsAsync(connectionString, tableName);
 
-                _logger.LogInformation("Log cleanup job completed successfully");
+                _logger.LogInformation($"{nameof(LogCleanupJob)} completed successfully");
             }
             catch
             {
-                throw new InternalServerException("Error in log cleanup job");
+                throw new InternalServerException($"Error occured in {nameof(LogCleanupJob)}");
             }
         }
 
