@@ -1,5 +1,6 @@
 ﻿using CurrencyMicroService.Core.Entities;
 using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -24,7 +25,9 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to retrieve {nameof(ApplicationSettings)} from database");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseRetrieveLatestErrorFor,
+                    nameof(ApplicationSettings)));
             }
         }
 

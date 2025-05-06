@@ -1,6 +1,7 @@
 ﻿using CurrencyMicroService.Core.DTOs;
 using CurrencyMicroService.Core.Entities;
 using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Interfaces;
 
 namespace CurrencyMicroService.Core.Services
@@ -37,8 +38,6 @@ namespace CurrencyMicroService.Core.Services
                     return;
                 }
 
-                var fetchDate = etsCurrencies.First().FetchDate.Date;
-
                 foreach (var etsCurrency in etsCurrencies)
                 {
                     var existingCurrency = await _repository.GetLatestETSCurrencyByCodeAsync(etsCurrency.Code);
@@ -67,7 +66,9 @@ namespace CurrencyMicroService.Core.Services
             }
             catch
             {
-                throw new InternalServerException($"Error updating {nameof(ETSCurrency)} information");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseUpdateErrorFor,
+                    nameof(ETSCurrency)));
             }
         }
 

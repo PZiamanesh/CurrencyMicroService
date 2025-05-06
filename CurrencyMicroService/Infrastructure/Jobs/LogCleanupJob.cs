@@ -1,4 +1,5 @@
 ﻿using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using Microsoft.Data.SqlClient;
 using System.Data;
 
@@ -33,7 +34,9 @@ namespace CurrencyMicroService.Infrastructure.Jobs
             }
             catch
             {
-                throw new InternalServerException($"Error occured in {nameof(LogCleanupJob)}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.JobExecutionError,
+                    nameof(LogCleanupJob)));
             }
         }
 

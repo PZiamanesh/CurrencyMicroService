@@ -1,4 +1,5 @@
 ﻿using CurrencyMicroService.Core.Entities;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Exceptions;
 using CurrencyMicroService.SharedModule;
 using HtmlAgilityPack;
@@ -35,7 +36,7 @@ namespace CurrencyMicroService.Infrastructure.HttpClientServices
 
                 string xpathQuery = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrency_XPath_Query));
                 var currencyRows = htmlDoc.DocumentNode.SelectNodes(xpathQuery);
-
+                
                 if (currencyRows == null || !currencyRows.Any())
                 {
                     _logger.LogError($"No {nameof(ETSCurrency)} data found in the HTML or it could be an HTML parsing problem");
@@ -69,17 +70,23 @@ namespace CurrencyMicroService.Infrastructure.HttpClientServices
                             currencies.Add(currency);
                         }
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        throw new InternalServerException($"Error processing {nameof(ETSCurrency)} row");
+                        _logger.LogError(ex, ExceptionMessages.ETSCurrencyHttpRowParsingError, nameof(ETSCurrency));
+                        throw new InternalServerException(string.Format(
+                            ExceptionMessages.ETSCurrencyHttpRowParsingError,
+                            nameof(ETSCurrency)));
                     }
                 }
 
                 return currencies;
             }
-            catch
+            catch (Exception ex)
             {
-                throw new InternalServerException($"Error fetching {nameof(ETSCurrency)} list");
+                _logger.LogError(ex, ExceptionMessages.HttpFetchError, nameof(ETSCurrency));
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.HttpFetchError,
+                    nameof(ETSCurrency)));
             }
         }
 

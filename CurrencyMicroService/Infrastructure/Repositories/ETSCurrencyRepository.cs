@@ -1,5 +1,6 @@
 ﻿using CurrencyMicroService.Core.Entities;
 using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
@@ -27,7 +28,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
 
                 if (latestDate == default)
                 {
-                    return new List<ETSCurrency>();
+                    return [];
                 }
 
                 return await _context.ETSCurrencies
@@ -37,7 +38,9 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to retrieve latest {nameof(ETSCurrency)} data from database");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseRetrieveLatestErrorFor,
+                    nameof(ETSCurrency)));
             }
         }
 
@@ -52,7 +55,10 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to retrieve {nameof(ETSCurrency)} data for code {code}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseRetrieveByFilterErrorFor,
+                    nameof(ETSCurrency),
+                    code));
             }
         }
 
@@ -64,7 +70,9 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to add {nameof(ETSCurrency)} data for code {currencyInfo.Code}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseAddErrorFor,
+                    nameof(ETSCurrency)));
             }
         }
 
@@ -76,7 +84,9 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException($"Failed to update {nameof(ETSCurrency)} data for code {currencyInfo.Code}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseUpdateErrorFor,
+                    nameof(ETSCurrency)));
             }
         }
 
@@ -88,7 +98,8 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             }
             catch
             {
-                throw new InternalServerException("An unexpected error occurred while saving changes to the database");
+                throw new InternalServerException(
+                    ExceptionMessages.DatabaseSaveChangesError);
             }
         }
     }

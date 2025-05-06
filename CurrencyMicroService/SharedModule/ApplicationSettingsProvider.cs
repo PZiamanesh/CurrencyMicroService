@@ -1,4 +1,5 @@
 ﻿using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Interfaces;
 
 namespace CurrencyMicroService.SharedModule
@@ -39,7 +40,7 @@ namespace CurrencyMicroService.SharedModule
             }
             catch
             {
-                throw new InternalServerException("Error initializing application settings");
+                throw new InternalServerException(ExceptionMessages.ApplicationSettingsInitializationError);
             }
             finally
             {
@@ -60,7 +61,7 @@ namespace CurrencyMicroService.SharedModule
             }
             else
             {
-                _logger.LogError($"No setting key found for {settingKey}");
+                _logger.LogError(string.Format(ExceptionMessages.ApplicationSettingKeyNotFoundError, settingKey));
                 throw new ApplicationSettingKeyNotFoundException(settingKey);
             }
         }

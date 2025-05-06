@@ -7,6 +7,7 @@ using Serilog.Sinks.MSSqlServer;
 using Serilog;
 using Serilog.Events;
 using CurrencyMicroService.SharedModule;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -58,7 +59,7 @@ builder.Services.AddHangfire(configuration => configuration
         UseRecommendedIsolationLevel = true,
         DisableGlobalLocks = true
     })
-    .UseFilter(new AutomaticRetryAttribute { Attempts = 2, DelaysInSeconds = new[] { 5, 10 } })
+    .UseFilter(new AutomaticRetryAttribute { Attempts = 2, DelaysInSeconds = [5, 10] })
 );
 
 builder.Services.AddHangfireServer();
@@ -113,7 +114,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred during initialization of application settings");
+        logger.LogError(ex, ExceptionMessages.ApplicationSettingsInitializationError);
     }
 }
 
@@ -142,7 +143,7 @@ using (var scope = app.Services.CreateScope())
     }
     catch (Exception ex)
     {
-        logger.LogError(ex, "An error occurred during job registration");
+        logger.LogError(ex, string.Format(ExceptionMessages.JobRegistrationError,"Hangfire jobs"));
     }
 }
 

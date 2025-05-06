@@ -1,5 +1,6 @@
 ﻿using CurrencyMicroService.Core.Entities;
 using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Core.Interfaces;
 using CurrencyMicroService.Infrastructure.HttpClientServices;
 
@@ -42,7 +43,9 @@ namespace CurrencyMicroService.Infrastructure.Jobs
             }
             catch
             {
-                throw new InternalServerException($"Error occured in {nameof(ETSCurrencyUpdateJob)}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.JobExecutionError,
+                    nameof(ETSCurrencyUpdateJob)));
             }
         }
     }

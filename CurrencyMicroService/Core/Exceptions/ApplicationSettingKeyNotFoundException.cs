@@ -1,9 +1,11 @@
-﻿namespace CurrencyMicroService.Core.Exceptions
+﻿using CurrencyMicroService.Core.Exceptions.MessageTemplates;
+
+namespace CurrencyMicroService.Core.Exceptions
 {
     public class ApplicationSettingKeyNotFoundException : Exception
     {
-        public ApplicationSettingKeyNotFoundException(string settingKeyName) 
-            : base($"No setting key found for {settingKeyName}")
+        public ApplicationSettingKeyNotFoundException(string settingKey) 
+            : base(string.Format(ExceptionMessages.ApplicationSettingKeyNotFoundError, settingKey))
         {
         }
     }

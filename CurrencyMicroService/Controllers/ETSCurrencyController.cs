@@ -22,7 +22,7 @@ namespace CurrencyMicroService.Controllers
 
             if (currencies == null || !currencies.Any())
             {
-                return NotFound("No data available");
+                return NotFound();
             }
 
             return Ok(currencies);
@@ -35,7 +35,7 @@ namespace CurrencyMicroService.Controllers
 
             if (currency == null)
             {
-                return NotFound($"No data available for code {code}");
+                return NotFound();
             }
 
             return Ok(currency);

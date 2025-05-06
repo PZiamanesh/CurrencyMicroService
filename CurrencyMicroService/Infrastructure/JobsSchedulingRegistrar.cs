@@ -1,10 +1,28 @@
 ﻿using CurrencyMicroService.Core.Exceptions;
+using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Infrastructure.Jobs;
 using CurrencyMicroService.SharedModule;
 using Hangfire;
 
 namespace CurrencyMicroService.Infrastructure
 {
+    /* Cron Expression
+        * * * * *
+        │ │ │ │ │
+        │ │ │ │ └─── day of week (0 - 6) (Sunday=0)
+        │ │ │ └───── month (1 - 12)
+        │ │ └─────── day of month (1 - 31)
+        │ └───────── hour (0 - 23)
+        └─────────── minute (0 - 59)
+        
+        Ex: "30 1,2,16 * * *"
+        In this example (1, 2, 16) represents hours part and 30 is the minutes part (30 [1,2,16] * * *).
+        If local time is considred, then it means everyday trigger at 1:30 AM, 2:30 AM and 4:30 PM .
+
+        For better flexability, configure local/utc format when scheduling a job in JobsSchedulingRegistrar.
+        Local format is the default for all scheduling jobs. p.zia
+     */
+
     public class JobsSchedulingRegistrar
     {
         private readonly ApplicationSettingsProvider _settingsProvider;
@@ -28,7 +46,9 @@ namespace CurrencyMicroService.Infrastructure
             }
             catch
             {
-                throw new InternalServerException("Error registering Hangfire jobs");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.JobRegistrationError, 
+                    "Hangfire jobs"));
             }
         }
 
@@ -36,23 +56,26 @@ namespace CurrencyMicroService.Infrastructure
         {
             try
             {
-                string timeExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrencyDailyJobStartTime));
-                string[] timeParts = timeExpression.Trim().Split('-');
-
-                int hour = int.Parse(timeParts[0]);
-                int minute = int.Parse(timeParts[1]);
+                string cronExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrencyDailyJobStartTime));
 
                 RecurringJob.AddOrUpdate<ETSCurrencyUpdateJob>(
-                    "daily-ets-currency-update",
-                    job => job.ExecuteAsync(),
-                    Cron.Daily(hour, minute)
-                    );
+                    recurringJobId: nameof(ETSCurrencyUpdateJob),
+                    methodCall: job => job.ExecuteAsync(),
+                    cronExpression: cronExpression,
+                    options: new RecurringJobOptions()
+                    {
+                        TimeZone = TimeZoneInfo.Local
+                    });
+
+                BackgroundJob.Enqueue<ETSCurrencyUpdateJob>(job => job.ExecuteAsync());
 
                 _logger.LogInformation($"{nameof(ETSCurrencyUpdateJob)} scheduled successfully");
             }
             catch
             {
-                throw new InternalServerException($"Error registering {nameof(ETSCurrencyUpdateJob)}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.JobRegistrationError,
+                    nameof(ETSCurrencyUpdateJob)));
             }
         }
 
@@ -60,24 +83,24 @@ namespace CurrencyMicroService.Infrastructure
         {
             try
             {
-                string dateTimeExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.LogsTableMonthlyCleanUp));
-                string[] timeParts = dateTimeExpression.Trim().Split('-');
-
-                int day = int.Parse(timeParts[0]);
-                int hour = int.Parse(timeParts[1]);
-                int minute = int.Parse(timeParts[2]);
+                string cronExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.LogsTableMonthlyCleanUp));
 
                 RecurringJob.AddOrUpdate<LogCleanupJob>(
-                    "monthly-log-cleanup",
-                    job => job.ExecuteAsync(),
-                    Cron.Monthly(day, hour, minute)
-                    );
+                    recurringJobId: nameof(LogCleanupJob),
+                    methodCall: job => job.ExecuteAsync(),
+                    cronExpression: cronExpression,
+                    options: new RecurringJobOptions()
+                    {
+                        TimeZone = TimeZoneInfo.Local
+                    });
 
                 _logger.LogInformation($"{nameof(LogCleanupJob)} scheduled successfully");
             }
             catch
             {
-                throw new InternalServerException($"Error registering {nameof(LogCleanupJob)}");
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.JobRegistrationError,
+                    nameof(LogCleanupJob)));
             }
         }
     }
