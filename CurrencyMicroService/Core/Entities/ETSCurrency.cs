@@ -1,6 +1,8 @@
-﻿namespace CurrencyMicroService.Core.Entities
+﻿using CurrencyMicroService.Core.Interfaces;
+
+namespace CurrencyMicroService.Core.Entities
 {
-    public class ETSCurrency
+    public class ETSCurrency : IBaseEntity
     {
         public int Id { get; set; }
 
@@ -23,5 +25,7 @@
         public decimal WeightedAverage { get; set; } // میانگین موزون
 
         public DateTime FetchDate { get; set; } // آخرین تاریخ دریافت از بانک مرکزی
+
+        public DateTime CreatedDate { get; set; }
     }
 }

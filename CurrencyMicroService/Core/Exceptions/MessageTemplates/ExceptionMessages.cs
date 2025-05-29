@@ -7,11 +7,10 @@
 
         // Database operation templates
         #region Database operation errors
-        public static string DatabaseRetrieveErrorFor => "Failed to retrieve {0} data from database";
-        public static string DatabaseRetrieveLatestErrorFor => "Failed to retrieve latest {0} data from database";
-        public static string DatabaseRetrieveByFilterErrorFor => "Failed to retrieve {0} data for {1}";
-        public static string DatabaseAddErrorFor => "Failed to add {0} data";
-        public static string DatabaseUpdateErrorFor => "Failed to update {0} data";
+        public static string DatabaseRetrieveError => "Failed to retrieve {0} data from database";
+        public static string DatabaseRetrieveByFilterError => "Failed to retrieve {0} data for {1}";
+        public static string DatabaseAddError => "Failed to add {0} data";
+        public static string DatabaseUpdateError => "Failed to update {0} data";
         public static string DatabaseSaveChangesError => "An unexpected error occurred while saving changes to the database";
         #endregion
 

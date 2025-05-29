@@ -29,6 +29,18 @@ namespace CurrencyMicroService.Core.Services
             return currency != null ? ToCurrencyInfoResult(currency) : null;
         }
 
+        public async Task<List<ETSCurrencyResult>> GetETSCurrenciesByDateAsync(DateTime date)
+        {
+            var currencies = await _repository.GetETSCurrenciesByDateAsync(date);
+            return currencies.Select(ToCurrencyInfoResult).ToList();
+        }
+
+        public async Task<ETSCurrencyResult?> GetETSCurrencyByCodeAndDateAsync(string code, DateTime date)
+        {
+            var currency = await _repository.GetETSCurrencyByCodeAndDateAsync(code, date);
+            return currency != null ? ToCurrencyInfoResult(currency) : null;
+        }
+
         public async Task UpdateETSCurrenciesAsync(List<ETSCurrency> etsCurrencies)
         {
             try
@@ -38,26 +50,29 @@ namespace CurrencyMicroService.Core.Services
                     return;
                 }
 
+                var today = DateTime.UtcNow.Date;
+
                 foreach (var etsCurrency in etsCurrencies)
                 {
-                    var existingCurrency = await _repository.GetLatestETSCurrencyByCodeAsync(etsCurrency.Code);
+                    var existingCurrencyForToday = await _repository.GetETSCurrencyByCodeAndDateAsync(etsCurrency.Code, today);
 
-                    if (existingCurrency != null)
+                    if (existingCurrencyForToday != null)
                     {
-                        existingCurrency.Name = etsCurrency.Name;
-                        existingCurrency.CashBuy = etsCurrency.CashBuy;
-                        existingCurrency.CashSell = etsCurrency.CashSell;
-                        existingCurrency.TransferBuy = etsCurrency.TransferBuy;
-                        existingCurrency.TransferSell = etsCurrency.TransferSell;
-                        existingCurrency.EssentialGoodsBuy = etsCurrency.EssentialGoodsBuy;
-                        existingCurrency.EssentialGoodsSell = etsCurrency.EssentialGoodsSell;
-                        existingCurrency.WeightedAverage = etsCurrency.WeightedAverage;
-                        existingCurrency.FetchDate = etsCurrency.FetchDate;
+                        existingCurrencyForToday.Name = etsCurrency.Name;
+                        existingCurrencyForToday.CashBuy = etsCurrency.CashBuy;
+                        existingCurrencyForToday.CashSell = etsCurrency.CashSell;
+                        existingCurrencyForToday.TransferBuy = etsCurrency.TransferBuy;
+                        existingCurrencyForToday.TransferSell = etsCurrency.TransferSell;
+                        existingCurrencyForToday.EssentialGoodsBuy = etsCurrency.EssentialGoodsBuy;
+                        existingCurrencyForToday.EssentialGoodsSell = etsCurrency.EssentialGoodsSell;
+                        existingCurrencyForToday.WeightedAverage = etsCurrency.WeightedAverage;
+                        existingCurrencyForToday.FetchDate = etsCurrency.FetchDate;
 
-                        _repository.UpdateETSCurrency(existingCurrency);
+                        _repository.UpdateETSCurrency(existingCurrencyForToday);
                     }
                     else
                     {
+                        etsCurrency.CreatedDate = today;
                         _repository.AddETSCurrency(etsCurrency);
                     }
                 }
@@ -67,7 +82,7 @@ namespace CurrencyMicroService.Core.Services
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseUpdateErrorFor,
+                    ExceptionMessages.DatabaseUpdateError,
                     nameof(ETSCurrency)));
             }
         }
@@ -85,7 +100,8 @@ namespace CurrencyMicroService.Core.Services
                 EssentialGoodsBuy = etsCurrency.EssentialGoodsBuy,
                 EssentialGoodsSell = etsCurrency.EssentialGoodsSell,
                 WeightedAverage = etsCurrency.WeightedAverage,
-                FetchDate = etsCurrency.FetchDate
+                FetchDate = etsCurrency.FetchDate,
+                CreatedDate = etsCurrency.CreatedDate
             };
         }
     }

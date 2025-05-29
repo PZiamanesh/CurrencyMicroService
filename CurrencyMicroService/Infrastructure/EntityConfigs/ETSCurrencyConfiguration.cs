@@ -43,6 +43,12 @@ namespace CurrencyMicroService.Infrastructure.EntityConfigs
 
             builder.Property(c => c.FetchDate)
                 .IsRequired();
+
+            builder.Property(c => c.CreatedDate)
+                .IsRequired();
+
+            builder.HasIndex(c => new { c.Code, c.CreatedDate })
+                .HasDatabaseName("IX_ETSCurrencies_Code_CreatedDate");
         }
     }
 }

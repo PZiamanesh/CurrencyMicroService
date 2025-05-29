@@ -2,6 +2,7 @@
 using CurrencyMicroService.Core.Services;
 using CurrencyMicroService.Infrastructure.HttpClientServices;
 using CurrencyMicroService.Infrastructure.Jobs;
+using CurrencyMicroService.Infrastructure.JobServices;
 using CurrencyMicroService.Infrastructure.Repositories;
 
 namespace CurrencyMicroService.SharedModule
@@ -18,6 +19,7 @@ namespace CurrencyMicroService.SharedModule
             RegisterJobs(services);
             RegisterHttpClientServices(services);
             ConfigureHttpClients(services);
+            RegisterJobServices(services);
 
             return services;
         }
@@ -48,6 +50,11 @@ namespace CurrencyMicroService.SharedModule
         private static void ConfigureHttpClients(IServiceCollection services)
         {
             services.AddHttpClient("ETSCurrencyScraperHttpClientService");
+        }
+
+        private static void RegisterJobServices(IServiceCollection services)
+        {
+            services.AddScoped<IETSCurrencyJobSchedulerService, ETSCurrencyJobSchedulerService>();
         }
     }
 }

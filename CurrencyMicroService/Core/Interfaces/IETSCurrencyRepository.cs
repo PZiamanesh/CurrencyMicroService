@@ -8,6 +8,10 @@ namespace CurrencyMicroService.Core.Interfaces
 
         Task<ETSCurrency?> GetLatestETSCurrencyByCodeAsync(string code);
 
+        Task<ETSCurrency?> GetETSCurrencyByCodeAndDateAsync(string code, DateTime date);
+
+        Task<List<ETSCurrency>> GetETSCurrenciesByDateAsync(DateTime date);
+
         void AddETSCurrency(ETSCurrency etsCurrency);
 
         void UpdateETSCurrency(ETSCurrency etsCurrency);

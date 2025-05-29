@@ -1,6 +1,8 @@
-﻿namespace CurrencyMicroService.Core.Entities
+﻿using CurrencyMicroService.Core.Interfaces;
+
+namespace CurrencyMicroService.Core.Entities
 {
-    public class ApplicationSettings
+    public class ApplicationSettings : IBaseEntity
     {
         public int Id { get; set; }
 

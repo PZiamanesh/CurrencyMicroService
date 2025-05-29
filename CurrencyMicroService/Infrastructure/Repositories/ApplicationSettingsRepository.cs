@@ -26,7 +26,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseRetrieveLatestErrorFor,
+                    ExceptionMessages.DatabaseRetrieveError,
                     nameof(ApplicationSettings)));
             }
         }

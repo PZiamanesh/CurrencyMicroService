@@ -21,25 +21,25 @@ namespace CurrencyMicroService.Infrastructure.Repositories
         {
             try
             {
-                var latestDate = await _context.ETSCurrencies
-                    .OrderByDescending(c => c.FetchDate)
-                    .Select(c => c.FetchDate)
+                var latestCreationDate = await _context.ETSCurrencies
+                    .OrderByDescending(c => c.CreatedDate)
+                    .Select(c => c.CreatedDate)
                     .FirstOrDefaultAsync();
 
-                if (latestDate == default)
+                if (latestCreationDate == default)
                 {
                     return [];
                 }
 
                 return await _context.ETSCurrencies
-                    .Where(c => c.FetchDate == latestDate)
+                    .Where(c => c.FetchDate == latestCreationDate)
                     .OrderBy(c => c.Code)
                     .ToListAsync();
             }
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseRetrieveLatestErrorFor,
+                    ExceptionMessages.DatabaseRetrieveError,
                     nameof(ETSCurrency)));
             }
         }
@@ -50,15 +50,50 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             {
                 return await _context.ETSCurrencies
                     .Where(c => c.Code == code)
-                    .OrderByDescending(c => c.FetchDate)
+                    .OrderByDescending(c => c.CreatedDate)
                     .FirstOrDefaultAsync();
             }
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseRetrieveByFilterErrorFor,
+                    ExceptionMessages.DatabaseRetrieveByFilterError,
                     nameof(ETSCurrency),
                     code));
+            }
+        }
+
+        public async Task<ETSCurrency?> GetETSCurrencyByCodeAndDateAsync(string code, DateTime date)
+        {
+            try
+            {
+                return await _context.ETSCurrencies
+                    .Where(c => c.Code == code && c.CreatedDate.Date == date.Date)
+                    .FirstOrDefaultAsync();
+            }
+            catch
+            {
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseRetrieveByFilterError,
+                    nameof(ETSCurrency),
+                    $"{code} for date {date:yyyy-MM-dd}"));
+            }
+        }
+
+        public async Task<List<ETSCurrency>> GetETSCurrenciesByDateAsync(DateTime date)
+        {
+            try
+            {
+                return await _context.ETSCurrencies
+                    .Where(c => c.CreatedDate.Date == date.Date)
+                    .OrderBy(c => c.Code)
+                    .ToListAsync();
+            }
+            catch
+            {
+                throw new InternalServerException(string.Format(
+                    ExceptionMessages.DatabaseRetrieveByFilterError,
+                    nameof(ETSCurrency),
+                    $"date {date:yyyy-MM-dd}"));
             }
         }
 
@@ -71,7 +106,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseAddErrorFor,
+                    ExceptionMessages.DatabaseAddError,
                     nameof(ETSCurrency)));
             }
         }
@@ -85,7 +120,7 @@ namespace CurrencyMicroService.Infrastructure.Repositories
             catch
             {
                 throw new InternalServerException(string.Format(
-                    ExceptionMessages.DatabaseUpdateErrorFor,
+                    ExceptionMessages.DatabaseUpdateError,
                     nameof(ETSCurrency)));
             }
         }

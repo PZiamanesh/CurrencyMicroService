@@ -12,5 +12,6 @@
         public decimal EssentialGoodsSell { get; set; }
         public decimal WeightedAverage { get; set; }
         public DateTime FetchDate { get; set; }
+        public DateTime CreatedDate { get; set; }
     }
 }

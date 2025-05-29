@@ -35,7 +35,35 @@ namespace CurrencyMicroService.Controllers
 
             if (currency == null)
             {
-                return NotFound();
+                return NotFound($"Currency {code.ToUpper()} not found");
+            }
+
+            return Ok(currency);
+        }
+
+        [HttpGet("by-date/{date:datetime}")]
+        public async Task<ActionResult<IEnumerable<ETSCurrencyResult>>> GetETSCurrenciesByDate([FromRoute] DateTime date)
+        {
+            var currencies = await _currencyService.GetETSCurrenciesByDateAsync(date);
+
+            if (currencies == null || !currencies.Any())
+            {
+                return NotFound($"No currencies found for date {date:yyyy-MM-dd}");
+            }
+
+            return Ok(currencies);
+        }
+
+        [HttpGet("{code}/by-date/{date:datetime}")]
+        public async Task<ActionResult<ETSCurrencyResult>> GetETSCurrencyByCodeAndDate(
+            [FromRoute] string code,
+            [FromRoute] DateTime date)
+        {
+            var currency = await _currencyService.GetETSCurrencyByCodeAndDateAsync(code.ToUpper(), date);
+
+            if (currency == null)
+            {
+                return NotFound($"Currency {code.ToUpper()} not found for date {date:yyyy-MM-dd}");
             }
 
             return Ok(currency);

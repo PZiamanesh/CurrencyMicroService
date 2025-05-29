@@ -1,6 +1,7 @@
 ﻿using CurrencyMicroService.Core.Exceptions;
 using CurrencyMicroService.Core.Exceptions.MessageTemplates;
 using CurrencyMicroService.Infrastructure.Jobs;
+using CurrencyMicroService.Infrastructure.JobServices;
 using CurrencyMicroService.SharedModule;
 using Hangfire;
 
@@ -27,14 +28,16 @@ namespace CurrencyMicroService.Infrastructure
     {
         private readonly ApplicationSettingsProvider _settingsProvider;
         private readonly ILogger<JobsSchedulingRegistrar> _logger;
+        private readonly IETSCurrencyJobSchedulerService _jobSchedulerService;
 
         public JobsSchedulingRegistrar(
             ApplicationSettingsProvider settingsProvider,
-            ILogger<JobsSchedulingRegistrar> logger
-            )
+            ILogger<JobsSchedulingRegistrar> logger,
+            IETSCurrencyJobSchedulerService jobSchedulerService)
         {
             _settingsProvider = settingsProvider;
             _logger = logger;
+            _jobSchedulerService = jobSchedulerService;
         }
 
         public async Task RegisterJobsAsync()
@@ -56,20 +59,9 @@ namespace CurrencyMicroService.Infrastructure
         {
             try
             {
-                string cronExpression = await _settingsProvider.GetSettingAsync(nameof(ApplicationSettingKey.ETSCurrencyDailyJobStartTime));
+                await _jobSchedulerService.InitializeJobSchedulingAsync();
 
-                RecurringJob.AddOrUpdate<ETSCurrencyUpdateJob>(
-                    recurringJobId: nameof(ETSCurrencyUpdateJob),
-                    methodCall: job => job.ExecuteAsync(),
-                    cronExpression: cronExpression,
-                    options: new RecurringJobOptions()
-                    {
-                        TimeZone = TimeZoneInfo.Local
-                    });
-
-                BackgroundJob.Enqueue<ETSCurrencyUpdateJob>(job => job.ExecuteAsync());
-
-                _logger.LogInformation($"{nameof(ETSCurrencyUpdateJob)} scheduled successfully");
+                _logger.LogInformation($"{nameof(ETSCurrencyUpdateJob)} initialization completed");
             }
             catch
             {
